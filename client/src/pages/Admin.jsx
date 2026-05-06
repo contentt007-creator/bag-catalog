@@ -166,7 +166,7 @@ export default function Admin() {
                 {bags.map((bag) => (
                   <tr key={bag._id}>
                     <td>
-                      <img src={bag.imageUrl} alt={bag.name} className="bag-thumb" />
+                      <img src={(bag.imageUrls || [])[0] || bag.imageUrl} alt={bag.name} className="bag-thumb" />
                     </td>
                     <td style={{ fontWeight: 500 }}>{bag.name}</td>
                     <td><span className="category-badge">{bag.category}</span></td>

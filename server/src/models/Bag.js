@@ -4,7 +4,7 @@ const bagSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
   price: { type: Number, required: true, min: 0 },
-  imageUrl: { type: String, required: true },
+  imageUrls: { type: [String], required: true, validate: [(v) => v.length > 0, 'At least one image required'] },
   category: {
     type: String,
     required: true,
