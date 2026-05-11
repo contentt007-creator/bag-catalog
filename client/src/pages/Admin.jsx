@@ -26,7 +26,7 @@ export default function Admin() {
     setLoadingBags(true);
     try {
       const { data } = await api.get('/api/bags');
-      setBags(data);
+      setBags(Array.isArray(data) ? data : []);
     } catch {
       toast.error('Failed to load bags');
     } finally {
