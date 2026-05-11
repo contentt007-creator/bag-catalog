@@ -12,7 +12,7 @@ export default function Catalog() {
 
   useEffect(() => {
     api.get('/api/bags')
-      .then((res) => setBags(res.data))
+      .then((res) => setBags(Array.isArray(res.data) ? res.data : []))
       .catch(() => setBags([]))
       .finally(() => setLoading(false));
   }, []);

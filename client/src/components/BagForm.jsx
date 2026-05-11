@@ -17,7 +17,7 @@ export default function BagForm({ bag, onSave, onClose }) {
   const isEdit = Boolean(bag);
   const [form, setForm] = useState(
     bag
-      ? { ...bag, price: bag.price.toString(), imageUrls: bag.imageUrls || (bag.imageUrl ? [bag.imageUrl] : []) }
+      ? { ...bag, price: bag.price.toString(), imageUrls: Array.isArray(bag.imageUrls) && bag.imageUrls.length > 0 ? bag.imageUrls : bag.imageUrl ? [bag.imageUrl] : [] }
       : { ...empty }
   );
   const [uploading, setUploading] = useState(false);

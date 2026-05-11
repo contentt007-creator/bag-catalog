@@ -2,7 +2,9 @@ import { useState } from 'react';
 import Lightbox from './Lightbox';
 
 export default function BagCard({ bag }) {
-  const images = bag.imageUrls || (bag.imageUrl ? [bag.imageUrl] : []);
+  const images = Array.isArray(bag.imageUrls) && bag.imageUrls.length > 0
+    ? bag.imageUrls
+    : bag.imageUrl ? [bag.imageUrl] : [];
   const [current, setCurrent] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxStart, setLightboxStart] = useState(0);
