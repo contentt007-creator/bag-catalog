@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import api from '../api/axios';
 import BagForm from '../components/BagForm';
 import ConfirmDialog from '../components/ConfirmDialog';
+import CategoryPanel from '../components/CategoryPanel';
 
 export default function Admin() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -137,6 +138,8 @@ export default function Admin() {
       </header>
 
       <div className="admin-content">
+        <CategoryPanel />
+
         <div className="admin-content-header">
           <h2>Bags ({bags.length})</h2>
           <button className="btn btn-primary" onClick={openAdd}>+ Add New Bag</button>
@@ -170,7 +173,7 @@ export default function Admin() {
                     </td>
                     <td style={{ fontWeight: 500 }}>{bag.name}</td>
                     <td><span className="category-badge">{bag.category}</span></td>
-                    <td>৳{new Intl.NumberFormat('en-BD').format(bag.price)}</td>
+                    <td>{bag.price != null ? '৳' + new Intl.NumberFormat('en-BD').format(bag.price) : '—'}</td>
                     <td>
                       <span className={`stock-badge ${bag.inStock ? 'in' : 'out'}`}>
                         {bag.inStock ? 'In Stock' : 'Out of Stock'}

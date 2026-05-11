@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
-
-const CATEGORIES = ['Tote', 'Clutch', 'Backpack', 'Sling', 'Shoulder', 'Other'];
 
 const empty = {
   name: '',
   description: '',
   price: '',
-  category: 'Tote',
+  category: '',
   inStock: true,
   imageUrls: [],
 };
@@ -17,11 +15,26 @@ export default function BagForm({ bag, onSave, onClose }) {
   const isEdit = Boolean(bag);
   const [form, setForm] = useState(
     bag
-      ? { ...bag, price: bag.price.toString(), imageUrls: Array.isArray(bag.imageUrls) && bag.imageUrls.length > 0 ? bag.imageUrls : bag.imageUrl ? [bag.imageUrl] : [] }
+      ? {
+          ...bag,
+          price: bag.price != null ? bag.price.toString() : '',
+          imageUrls: Array.isArray(bag.imageUrls) && bag.imageUrls.length > 0
+            ? bag.imageUrls
+            : bag.imageUrl ? [bag.imageUrl] : [],
+        }
       : { ...empty }
   );
+  const [categories, setCategories] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    api.get('/api/categories').then((res) => {
+      const cats = Array.isArray(res.data) ? res.data : [];
+      setCategories(cats);
+      if (!form.category && cats.length > 0) set('category', cats[0].name);
+    }).catch(() => {});
+  }, []);
 
   function set(key, val) {
     setForm((prev) => ({ ...prev, [key]: val }));
@@ -58,9 +71,14 @@ export default function BagForm({ bag, onSave, onClose }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!form.imageUrls.length) { toast.error('Please upload at least one image'); return; }
+    if (!form.category) { toast.error('Please select a category'); return; }
     setSaving(true);
     try {
-      await onSave({ ...form, price: Number(form.price) }, isEdit);
+      const payload = {
+        ...form,
+        price: form.price !== '' ? Number(form.price) : null,
+      };
+      await onSave(payload, isEdit);
     } finally {
       setSaving(false);
     }
@@ -82,20 +100,26 @@ export default function BagForm({ bag, onSave, onClose }) {
             </div>
 
             <div className="form-group">
-              <label>Description *</label>
-              <textarea value={form.description} onChange={(e) => set('description', e.target.value)} required placeholder="Describe the bag…" />
+              <label>Description <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(optional)</span></label>
+              <textarea value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Describe the bag…" />
             </div>
 
             <div className="form-grid">
               <div className="form-group">
-                <label>Price (৳) *</label>
-                <input type="number" min="0" step="1" value={form.price} onChange={(e) => set('price', e.target.value)} required placeholder="0" />
+                <label>Price (৳) <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(optional)</span></label>
+                <input type="number" min="0" step="1" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="0" />
               </div>
               <div className="form-group">
                 <label>Category *</label>
-                <select value={form.category} onChange={(e) => set('category', e.target.value)}>
-                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-                </select>
+                {categories.length === 0 ? (
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                    No categories yet — add one in admin first.
+                  </p>
+                ) : (
+                  <select value={form.category} onChange={(e) => set('category', e.target.value)}>
+                    {categories.map((c) => <option key={c._id} value={c.name}>{c.name}</option>)}
+                  </select>
+                )}
               </div>
             </div>
 
@@ -113,11 +137,10 @@ export default function BagForm({ bag, onSave, onClose }) {
                 </label>
                 {uploading && <span className="upload-status">Uploading…</span>}
               </div>
-
               {form.imageUrls.length > 0 && (
                 <div className="img-grid">
                   {form.imageUrls.map((url, i) => (
-                    <div key={url} className="img-thumb-wrap">
+                    <div key={url + i} className="img-thumb-wrap">
                       <img src={url} alt={`Photo ${i + 1}`} className="img-thumb" />
                       <button type="button" className="img-thumb-remove" onClick={() => removeImage(i)}>×</button>
                     </div>

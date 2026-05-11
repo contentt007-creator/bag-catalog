@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const authRoutes = require('./src/routes/auth');
 const bagRoutes = require('./src/routes/bags');
 const uploadRoutes = require('./src/routes/upload');
+const categoryRoutes = require('./src/routes/categories');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/bags', bagRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/categories', categoryRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 

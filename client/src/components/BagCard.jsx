@@ -9,7 +9,7 @@ export default function BagCard({ bag }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxStart, setLightboxStart] = useState(0);
 
-  const price = new Intl.NumberFormat('en-BD').format(bag.price);
+  const price = bag.price != null ? '৳' + new Intl.NumberFormat('en-BD').format(bag.price) : null;
 
   const prev = (e) => { e.stopPropagation(); setCurrent((c) => (c - 1 + images.length) % images.length); };
   const next = (e) => { e.stopPropagation(); setCurrent((c) => (c + 1) % images.length); };
@@ -47,7 +47,7 @@ export default function BagCard({ bag }) {
             <span className="category-badge">{bag.category}</span>
           </div>
           <p className="bag-card-desc">{bag.description}</p>
-          <div className="bag-card-price">৳{price}</div>
+          {price && <div className="bag-card-price">{price}</div>}
         </div>
       </div>
 

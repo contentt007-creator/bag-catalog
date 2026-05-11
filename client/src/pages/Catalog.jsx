@@ -3,17 +3,22 @@ import api from '../api/axios';
 import BagCard from '../components/BagCard';
 import { Link } from 'react-router-dom';
 
-const CATEGORIES = ['All', 'Tote', 'Clutch', 'Backpack', 'Sling', 'Shoulder', 'Other'];
-
 export default function Catalog() {
   const [bags, setBags] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/api/bags')
-      .then((res) => setBags(Array.isArray(res.data) ? res.data : []))
-      .catch(() => setBags([]))
+    Promise.all([
+      api.get('/api/bags'),
+      api.get('/api/categories'),
+    ])
+      .then(([bagsRes, catsRes]) => {
+        setBags(Array.isArray(bagsRes.data) ? bagsRes.data : []);
+        setCategories(Array.isArray(catsRes.data) ? catsRes.data : []);
+      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
@@ -37,13 +42,19 @@ export default function Catalog() {
         <p className="catalog-subtitle">Handcrafted bags for every occasion</p>
 
         <div className="filter-bar">
-          {CATEGORIES.map((cat) => (
+          <button
+            className={`filter-btn${activeCategory === 'All' ? ' active' : ''}`}
+            onClick={() => setActiveCategory('All')}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
             <button
-              key={cat}
-              className={`filter-btn${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
+              key={cat._id}
+              className={`filter-btn${activeCategory === cat.name ? ' active' : ''}`}
+              onClick={() => setActiveCategory(cat.name)}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>
