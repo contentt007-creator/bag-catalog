@@ -43,8 +43,12 @@ export default function Admin() {
       localStorage.setItem('token', data.token);
       setToken(data.token);
       toast.success('Logged in');
-    } catch {
-      toast.error('Invalid password');
+    } catch (err) {
+      if (err.response) {
+        toast.error(err.response.data?.error || 'Invalid password');
+      } else {
+        toast.error('Cannot reach server: ' + (err.message || 'Network error'));
+      }
     } finally {
       setLoginLoading(false);
     }
