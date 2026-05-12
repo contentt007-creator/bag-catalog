@@ -41,7 +41,7 @@ export default function BagCard({ bag }) {
           )}
           <div className="card-zoom-hint">🔍</div>
         </div>
-        <div className="bag-card-body">
+        <div className="bag-card-body" onClick={() => openLightbox(current)} style={{ cursor: 'pointer' }}>
           <div className="bag-card-top">
             <h3 className="bag-card-name">{bag.name}</h3>
             <span className="category-badge">{bag.category}</span>
@@ -52,7 +52,7 @@ export default function BagCard({ bag }) {
       </div>
 
       {lightboxOpen && (
-        <Lightbox images={images} startIndex={lightboxStart} onClose={() => setLightboxOpen(false)} />
+        <Lightbox images={images} startIndex={lightboxStart} onClose={() => setLightboxOpen(false)} bag={bag} />
       )}
     </>
   );
